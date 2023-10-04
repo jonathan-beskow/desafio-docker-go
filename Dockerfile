@@ -1,9 +1,12 @@
-FROM golang:1.18-alpine
+FROM golang AS builder
 
-WORKDIR /app
+WORKDIR /usr/src/appgolang
 
 COPY . .
 
-RUN go build -o main
+RUN CGO_ENABLED=0 GOOS=linux go build -o /fullcycle
 
-CMD ["./main"]
+FROM scratch
+
+COPY --from=builder /fullcycle /fullcycle
+ENTRYPOINT ["/fullcycle"] 
